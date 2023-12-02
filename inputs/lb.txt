@@ -1,0 +1,26 @@
+{
+	"members": {
+		"447858": {
+			"completion_day_level": {
+				"1": {
+					"2": {
+						"star_index": 2323,
+						"get_star_ts": 1669871086
+					},
+					"1": {
+						"get_star_ts": 1669871024,
+						"star_index": 1040
+					}
+				}
+			},
+			"last_star_ts": 1670047769,
+			"global_score": 0,
+			"id": 447858,
+			"local_score": 110,
+			"stars": 6,
+			"name": "Stevie-O"
+		}
+	},
+	"event": "2022",
+	"owner_id": 447858
+}
