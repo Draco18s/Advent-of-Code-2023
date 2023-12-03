@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-namespace Advent_of_Code_2020.StatsBuilder {
+namespace AdventofCode.StatsBuilder {
 	public class AoCLeaderboard {
 
 		[JsonProperty("event")]

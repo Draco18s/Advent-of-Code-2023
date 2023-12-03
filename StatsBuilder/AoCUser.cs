@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-namespace Advent_of_Code_2020.StatsBuilder {
+namespace AdventofCode.StatsBuilder {
 	public class AoCUser {
 		public int global_score { get; set; }
 		public int local_score { get; set; }

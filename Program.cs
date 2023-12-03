@@ -1,4 +1,4 @@
-﻿using Advent_of_Code_2020.StatsBuilder;
+﻿using AdventofCode.StatsBuilder;
 using RestSharp;
 using System;
 using System.Collections.Generic;
@@ -11,7 +11,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Draco18s.AoCLib;
 
-namespace AdventofCode2022 {
+namespace AdventofCode2023 {
 	static class Program {
 		private const bool CUSTOM_LEADERBOARD = true;
 		private const float MAX_EXPECTED = 4f;
@@ -20,9 +20,18 @@ namespace AdventofCode2022 {
 		private const string leaderboardURI = "{0}/leaderboard/private/view/{1}.json";
 		private static Dictionary<string,List<string>> conf;
 		
-		private static string puzzleNum = "1";
+		private static string puzzleNum = "2";
 
 		static void Main(string[] args) {
+			/***
+			 * HOW TO GET SESSION ID (because I keep forgetting)
+			 * Log in
+			 * Go to a puzzle
+			 * Get puzzle input
+			 * Open console on the input page (Network)
+			 * Refresh, look at the input request header
+			 * Copy the cookie value
+			 */
 			#region config
 			string path = Path.GetFullPath("./../../../inputs/config.json");
 			if (!File.Exists(path))
@@ -59,14 +68,14 @@ namespace AdventofCode2022 {
 				//string input = @"";
 				DateTime s = DateTime.Now;
 				
-				long result = DayTwentyfive.Part1(input);
+				long result = Day2.Part1(input);
 				
 				DateTime e = DateTime.Now;
 				Console.WriteLine(result);
 				Console.WriteLine("Time: " + (e - s).TotalMilliseconds);
 				s = DateTime.Now;
 				
-				result = DayTwentyfive.Part2(input);
+				result = Day2.Part2(input);
 				
 				e = DateTime.Now;
 				Console.WriteLine(result);
