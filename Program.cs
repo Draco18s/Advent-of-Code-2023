@@ -13,18 +13,17 @@ using Draco18s.AoCLib;
 
 namespace AdventofCode2023 {
 	static class Program {
-		private const bool CUSTOM_LEADERBOARD = true;
+		private const bool CUSTOM_LEADERBOARD = false;
 		private const float MAX_EXPECTED = 4f;
 		private const string year = "2023";
 		private static readonly Uri baseAddress = new Uri("https://adventofcode.com");
 		private const string leaderboardURI = "{0}/leaderboard/private/view/{1}.json";
 		private static Dictionary<string,List<string>> conf;
 		
-		private static string puzzleNum = "2";
+		private static string puzzleNum = "4";
 
 		static void Main(string[] args) {
-			/***
-			 * HOW TO GET SESSION ID (because I keep forgetting)
+			/*** HOW TO GET SESSION ID (because I keep forgetting)
 			 * Log in
 			 * Go to a puzzle
 			 * Get puzzle input
@@ -63,19 +62,19 @@ namespace AdventofCode2023 {
 			{
 				string input = File.ReadAllText(p);
 				input = input.Replace("\r", "");
-				if(input[input.Length - 1] == '\n')
+				if(input[^1] == '\n')
 					input = input.Substring(0, input.Length - 1); //stupid trailing newline
 				//string input = @"";
 				DateTime s = DateTime.Now;
 				
-				long result = Day2.Part1(input);
+				long result = Day4.Part1(input);
 				
 				DateTime e = DateTime.Now;
 				Console.WriteLine(result);
 				Console.WriteLine("Time: " + (e - s).TotalMilliseconds);
 				s = DateTime.Now;
 				
-				result = Day2.Part2(input);
+				result = Day4.Part2(input);
 				
 				e = DateTime.Now;
 				Console.WriteLine(result);
@@ -118,9 +117,17 @@ namespace AdventofCode2023 {
 
 				string mainTable = "<table> <tbody> <tr> <td class=\"typeheader\" colspan=\"3\">(25 items)<span class=\"fixedextenser\">4</span></td></tr><tr> <th title=\"System.String\">day</th> <th title=\"System.String,System.DateTime,System.Int32[]\">silver_order</th> <th title=\"System.String,System.DateTime,System.Int32[]\">gold_order</th> </tr>{0}</tbody></table>";
 				StringBuilder builder = new StringBuilder();
-				for(int d = 1; d <= 25; d++) {
+				int m = int.Parse(puzzleNum);
+				for(int d = 1; d <= m; d++) {
 					if(Count(users, d.ToString(), "1") == 0) break;
-					builder.Append(GetTableRow(users, d));
+					try
+					{
+						builder.Append(GetTableRow(users, d));
+					}
+					catch (Exception e)
+					{
+						Console.WriteLine(e.Message);
+					}
 				}
 				builder.Append(GetTableRowScores(users));
 				string htmlTemplate = File.ReadAllText(Path.GetFullPath("./../../../inputs/leaderboard_html.txt"));
@@ -180,7 +187,7 @@ namespace AdventofCode2023 {
 			parts[0] = "";
 			parts[1] = "";
 
-			DateTime start = new DateTime(2022, (d>1?12:11), (d>1?d-1:30));
+			DateTime start = new DateTime(int.Parse(year), (d>1?12:11), (d>1?d-1:30));
 			start = start.AddHours(23);
 			double avg = users.Where(x => x.completion_day_level.ContainsKey(day) && x.completion_day_level[day].ContainsKey("1")).Where(
 				x =>
@@ -223,7 +230,7 @@ namespace AdventofCode2023 {
 
 		private static void SortUsers(ref List<AoCUser> users, string day, string part) {
 			int d = int.Parse(day);
-			DateTime start = new DateTime(2022, (d > 1 ? 12 : 11), (d > 1 ? d - 1 : 30));
+			DateTime start = new DateTime(int.Parse(year), (d > 1 ? 12 : 11), (d > 1 ? d - 1 : 30));
 			start = start.AddHours(23);
 			double avg = users.Where(x => x.completion_day_level.ContainsKey(day) && x.completion_day_level[day].ContainsKey("1")).Where(
 				x =>
@@ -295,7 +302,7 @@ namespace AdventofCode2023 {
 		private static string GetUserLineScore(AoCUser user, string day, string part, int pts, TimeSpan averageTime)
 		{
 			int d = int.Parse(day);
-			DateTime start = new DateTime(2022, (d > 1 ? 12 : 11), (d > 1 ? d - 1 : 30));
+			DateTime start = new DateTime(int.Parse(year), (d > 1 ? 12 : 11), (d > 1 ? d - 1 : 30));
 			start = start.AddHours(23);
 			string p = "<tr><td>{0}</td><td>{1}</td><td class=\"n\">{2}</td></tr>";
 			if (user.completion_day_level.ContainsKey(day) && user.completion_day_level[day].ContainsKey(part))
