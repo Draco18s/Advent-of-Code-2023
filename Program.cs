@@ -6,6 +6,7 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 //using System.Text.Json;
 using System.Threading.Tasks;
@@ -13,14 +14,14 @@ using Draco18s.AoCLib;
 
 namespace AdventofCode2023 {
 	static class Program {
-		private const bool CUSTOM_LEADERBOARD = false;
-		private const float MAX_EXPECTED = 4f;
+		private const bool CUSTOM_LEADERBOARD = true;
+		private const float MAX_EXPECTED = 3f;
 		private const string year = "2023";
 		private static readonly Uri baseAddress = new Uri("https://adventofcode.com");
 		private const string leaderboardURI = "{0}/leaderboard/private/view/{1}.json";
 		private static Dictionary<string,List<string>> conf;
 		
-		private static string puzzleNum = "4";
+		private static string puzzleNum = "7";
 
 		static void Main(string[] args) {
 			/*** HOW TO GET SESSION ID (because I keep forgetting)
@@ -60,6 +61,12 @@ namespace AdventofCode2023 {
 			#endregion
 			else
 			{
+				Type ty = Type.GetType($"AdventofCode{year}.Day{puzzleNum}");
+				if (ty == null)
+				{
+					Console.WriteLine($"Failed to find {year} Day {puzzleNum} class!");
+					return;
+				}
 				string input = File.ReadAllText(p);
 				input = input.Replace("\r", "");
 				if(input[^1] == '\n')
@@ -67,15 +74,29 @@ namespace AdventofCode2023 {
 				//string input = @"";
 				DateTime s = DateTime.Now;
 				
-				long result = Day4.Part1(input);
+				object invokeResult = ty.InvokeMember("Part1", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { input });
+				if (invokeResult == null)
+				{
+					Console.WriteLine($"{year} Day {puzzleNum} Part 1 returned null!");
+					return;
+				}
+				long result = (long)invokeResult;
+
+				//long result = Day1.Part1(input);
 				
 				DateTime e = DateTime.Now;
 				Console.WriteLine(result);
 				Console.WriteLine("Time: " + (e - s).TotalMilliseconds);
 				s = DateTime.Now;
-				
-				result = Day4.Part2(input);
-				
+
+				invokeResult = ty.InvokeMember("Part2", BindingFlags.Static | BindingFlags.NonPublic | BindingFlags.InvokeMethod, null, null, new object[] { input });
+				if (invokeResult == null)
+				{
+					Console.WriteLine($"{year} Day {puzzleNum} Part 2 returned null!");
+					return;
+				}
+				result = (long)invokeResult;
+
 				e = DateTime.Now;
 				Console.WriteLine(result);
 				Console.WriteLine("Time: " + (e - s).TotalMilliseconds);
