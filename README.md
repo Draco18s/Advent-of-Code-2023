@@ -6,6 +6,8 @@ https://adventofcode.com/2023/
 ```
       --------Part 1---------   --------Part 2---------
 Day       Time    Rank  Score       Time    Rank  Score
+  9   00:05:57     332      0   00:10:49     746      0
+  8   00:11:25    2857      0   00:52:43    4047      0
   7   00:29:31    2404      0   00:58:45    3546      0
   6   00:06:45    1146      0   00:09:53    1093      0
   5   00:35:28    3974      0   00:54:58    1174      0
@@ -20,3 +22,5 @@ Day       Time    Rank  Score       Time    Rank  Score
 *Day 5: Part 1 was slowed by a sequence of minor errors, such as enum-parsing `"seedtosoilmap:"` instead of `"seedtosoilmap"`. Part 2 was pretty straight forward, but confused myself by not naming my anonymous tuples initially. Did beat both Stevie-O and Keith, though. Those two are beasts.
 *Day 6: Finished part 2 before either Stevie-O or Keith finished part 1. That's...abnormal. This one was really pretty simple.
 *Day 7: The `highcard` ordering was being a right pain and getting one case correct and another case wrong and had to resort to an alternate method until I could come back and examine things when I had time. Part 2 had an edge case I didn't properly account for, whoops. Slowed me down more than I care to admit.
+*Day 8: Did not recognize the LCM quick-solve in part 2 right away, then bungled submitting my answer, having inadvertently miscalculated said LCM.
+*Day 9: <success_kid.jpg/> That's my second 332 rank (ties my 5th best rank since 2020)
