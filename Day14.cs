@@ -54,10 +54,9 @@ namespace AdventofCode2023
 		{
 			Grid grid = new Grid(input, true);
 			long result = 0l;
-			long lastresult = 0l;
 
-			// I THINK I GOT STUPID LUCKY
-			for (int i = 0; i < 1000; i++)
+			// I GOT STUPID LUCKY
+			/*for (int i = 0; i < 1000; i++)
 			{
 				while (RollRocks(grid)) ;
 				grid.Rotate(Orientation.EAST);
@@ -69,7 +68,53 @@ namespace AdventofCode2023
 				grid.Rotate(Orientation.EAST);
 			}
 			
-			return CalcLoad(grid);
+			return  CalcLoad(grid);
+			*/
+
+			//This will work for any input
+
+			for (int i = 0; i < 200; i++)
+			{
+				while (RollRocks(grid)) ;
+				grid.Rotate(Orientation.EAST);
+				while (RollRocks(grid)) ;
+				grid.Rotate(Orientation.EAST);
+				while (RollRocks(grid)) ;
+				grid.Rotate(Orientation.EAST);
+				while (RollRocks(grid)) ;
+				grid.Rotate(Orientation.EAST);
+			}
+			List<long> cycleVals = new List<long>();
+			for (int i = 0; i < 200; i++)
+			{
+				while (RollRocks(grid)) ;
+				grid.Rotate(Orientation.EAST);
+				while (RollRocks(grid)) ;
+				grid.Rotate(Orientation.EAST);
+				while (RollRocks(grid)) ;
+				grid.Rotate(Orientation.EAST);
+				while (RollRocks(grid)) ;
+				grid.Rotate(Orientation.EAST);
+
+				long v = CalcLoad(grid);
+
+				if (cycleVals.Contains(v))
+				{
+					int j = cycleVals.LastIndexOf(v);
+					int cycleLen = (i - j);
+
+					int q = (1000000000 - 200 - i -1) % cycleLen;
+
+					int n = (q + j) % cycleLen;
+					result = cycleVals[n];
+
+					break;
+				}
+
+				cycleVals.Add(v);
+			}
+
+			return result;
 		}
 
 		private static long CalcLoad(Grid grid)
