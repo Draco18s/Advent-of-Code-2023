@@ -21,7 +21,7 @@ namespace AdventofCode2023 {
 		private const string leaderboardURI = "{0}/leaderboard/private/view/{1}.json";
 		private static Dictionary<string,List<string>> conf;
 		
-		private static string puzzleNum = "9";
+		private static string puzzleNum = "14";
 
 		static void Main(string[] args) {
 			/*** HOW TO GET SESSION ID (because I keep forgetting)
@@ -54,6 +54,11 @@ namespace AdventofCode2023 {
 			if(!File.Exists(p)) {
 				Task.Run(async () => {
 					string puzzleInput = await GetInputFor(puzzleNum, conf.Keys.First());
+					if (string.IsNullOrEmpty(puzzleInput))
+					{
+						Console.WriteLine($"Puzzle {puzzleInput} not yet available!");
+						return;
+					}
 					File.WriteAllText(p, puzzleInput);
 					Main(args);
 				});

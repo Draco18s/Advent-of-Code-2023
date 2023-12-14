@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Linq;
+using Microsoft.VisualBasic;
 
 namespace Draco18s.AoCLib {
 	public class Grid {
@@ -389,11 +390,57 @@ namespace Draco18s.AoCLib {
 			return FloodFill(pos.x, pos.y, fillValue, shouldFill, edgeHandler,allowDiagonals);
 		}
 
-		public long FloodFill(int x, int y, int fillValue, ShouldFill shouldFill, bool allowDiagonals=false) {
-			return FloodFill(x, y, fillValue, shouldFill, returnNegInf,allowDiagonals);
+		public long FloodFill(int _x, int _y, int fillValue, ShouldFill shouldFill, bool allowDiagonals=false) {
+			return FloodFill(_x, _y, fillValue, shouldFill, returnNegInf,allowDiagonals);
 		}
 
-		public long FloodFill(int x, int y, int fillValue, ShouldFill shouldFill, EdgeHandler edgeHandler, bool allowDiagonals=false) {
+		public long FloodFill(int _x, int _y, int fillValue, ShouldFill shouldFill, EdgeHandler edgeHandler, bool allowDiagonals = false)
+		{
+			long size = 1;
+			int L = cells[_x, _y];
+			if (L == fillValue) return 0;
+
+			List<(int X, int Y)> open = new List<(int,int)>();
+			open.Add((_x,_y));
+
+			while (open.Count > 0)
+			{
+				(int x, int y) p = open[0];
+				open.RemoveAt(0);
+				if (p.x >= MaxX || p.y >= MaxY || p.x < MinX || p.y < MinY) continue;
+				if(cells[p.x, p.y] == fillValue) continue;
+				cells[p.x, p.y] = fillValue;
+				size++;
+
+				int N = (p.y == MinY) ? edgeHandler() : cells[p.x, p.y - 1];
+				int W = (p.x == MinX) ? edgeHandler() : cells[p.x - 1, p.y];
+
+				int S = (p.y == MaxY - 1) ? edgeHandler() : cells[p.x, p.y + 1];
+				int E = (p.x == MaxX - 1) ? edgeHandler() : cells[p.x + 1, p.y];
+
+				if (shouldFill(N, L))
+				{
+					open.Add((p.x, p.y - 1));
+				}
+				if (shouldFill(S, L))
+				{
+					open.Add((p.x, p.y + 1));
+				}
+				if (shouldFill(W, L))
+				{
+					open.Add((p.x - 1, p.y));
+				}
+				if (shouldFill(E, L))
+				{
+					open.Add((p.x + 1, p.y));
+				}
+			}
+
+			return size;
+			
+		}
+
+		public long FloodFillRecursive(int x, int y, int fillValue, ShouldFill shouldFill, EdgeHandler edgeHandler, bool allowDiagonals=false) {
 			long size = 1;
 			if(x >= MaxX || y >= MaxY || x < MinX || y < MinY) return 0;
 			int L = cells[x,y];
@@ -472,17 +519,17 @@ namespace Draco18s.AoCLib {
 			return ret;
 		}
 
-		private void FloodFill(int x, int y, EdgeHandler condition, EdgeHandler fillValue)
+		private void FloodFill(int _x, int _y, EdgeHandler condition, EdgeHandler fillValue)
 		{
-			if (x < MinX || x >= MaxX) return;
-			if (y < MinY || y >= MaxY) return;
-			if (this[x, y, true] == condition())
+			if (_x < MinX || _x >= MaxX) return;
+			if (_y < MinY || _y >= MaxY) return;
+			if (this[_x, _y, true] == condition())
 			{
-				this[x, y, true] = fillValue();
-				FloodFill(x + 1, y, condition, fillValue);
-				FloodFill(x - 1, y, condition, fillValue);
-				FloodFill(x, y + 1, condition, fillValue);
-				FloodFill(x, y - 1, condition, fillValue);
+				this[_x, _y, true] = fillValue();
+				FloodFill(_x + 1, _y, condition, fillValue);
+				FloodFill(_x - 1, _y, condition, fillValue);
+				FloodFill(_x, _y + 1, condition, fillValue);
+				FloodFill(_x, _y - 1, condition, fillValue);
 			}
 		}
 	}
