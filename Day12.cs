@@ -32,7 +32,7 @@ namespace AdventofCode2023
 
 			int minLength = sizes.Sum() + sizes.Count - 1;
 			if (s.Length < minLength) return 0;
-			if (s.Length == minLength) return 1; //no possible arrangements are possible except 1
+			if (s.Length == minLength) return s.Contains('.') ? 0 : 1; //no possible arrangements are possible except 1
 			
 			long count = 0;
 			int m = s.Count(c => c == '?');
@@ -133,7 +133,7 @@ namespace AdventofCode2023
 			return result;
 		}
 
-		private static void Inc(int[] s, int max)
+		private static void Inc(int[] s, int max, int[] resetVal)
 		{
 			for (int i = 0; i < s.Length; i++)
 			{
@@ -144,7 +144,7 @@ namespace AdventofCode2023
 				}
 				else if(i < s.Length-1)
 				{
-					s[i] = 0;
+					s[i] = resetVal[i];
 				}
 			}
 			s[^1] = max;
@@ -167,29 +167,47 @@ namespace AdventofCode2023
 					chunk = chunk.Replace("..", ".");
 
 				int[] s = new int[values.Length];
+				//int minVal = s.Min();
 				for (int i = 0; i < s.Length; i++)
 				{
-					s[i] = 1;
+					s[i] = values[i];
 				}
 				int m = chunk.Length;
-				for (; Cont(s, m); Inc(s, m))
+				long loops = 0;
+				for (; Cont(s, m); Inc(s, m, values))
 				{
+					loops++;
 					//this takes too long
-					if(s.Where((t, i) => t < values[i]).Any()) continue;
-
+					if (Invalid(s, values)) continue;
 					SpringBreakdown[] frags = new SpringBreakdown[s.Length];
 					int skip = 0;
 					for (int i = 0; i < s.Length; i++)
 					{
 						frags[i] = new SpringBreakdown(string.Join("",chunk.Skip(skip).Take(s[i])), values[i]);
 						skip += s[i];
+						if (frags[i].GetPermutations() == 0)
+							break;
 					}
 
+					if(frags.Any(f => f.GetPermutations() == 0)) continue;
+
+					loops = 0;
 					if (!subsections.Any(list => Day12.Matches(list, frags)))
 					{
 						subsections.Add(frags);
 					}
 				}
+			}
+
+			private bool Invalid(int[] s, int[] j)
+			{
+				for (int i = 0; i < s.Length/2; i++)
+				{
+					if (s[i] < j[i]) return true;
+					if (s[^(i+1)] < j[^(i+1)]) return true;
+				}
+
+				return false;
 			}
 
 			private static bool Cont(int[] ints, int target)
