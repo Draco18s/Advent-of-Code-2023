@@ -20,20 +20,20 @@ namespace AdventofCode2023
 			{
 				string[] data = line.Split(' ');
 				List<int> sizes = data[1].Split(',').Select(int.Parse).ToList();
-				result += GetPermutations(data[0], sizes);
+				long r = GetPermutations(data[0], sizes);
+				result += r;
 			}
 			return result;
 		}
 
 		private static long GetPermutations(string s, List<int> sizes)
 		{
-			if(s.Length == 0 || sizes.Count == 0) return 1; //default
+			if(sizes.Count == 0) return 1; //default
 			s = s.Trim('.');
 
 			int minLength = sizes.Sum() + sizes.Count - 1;
 			if (s.Length < minLength) return 0;
-			if (s.Length == minLength) return s.Contains('.') ? 0 : 1; //no possible arrangements are possible except 1
-			
+			if (s.Length == minLength) return 1;
 			long count = 0;
 			int m = s.Count(c => c == '?');
 			for (long i = 0; i < (1 << m); i++)
@@ -53,8 +53,6 @@ namespace AdventofCode2023
 				if (Compare(rep, s, sizes, out int O))
 				{
 					count++;
-					//string str = string.Join("", rep);
-					//Console.WriteLine($"{i}: {str}");
 				}
 			}
 			return count;
@@ -115,38 +113,117 @@ namespace AdventofCode2023
 
 		internal static long Part2(string input)
 		{
+			long totalArrangements = 0;
+
+			string[] lines = input.Split('\n');
+
+			foreach (string line in lines)
+			{
+				string[] sections = line.Split(' ');
+
+				string firstSection = sections[0];
+				string secondSection = sections[1];
+				firstSection = firstSection + '?' + firstSection + '?' + firstSection + '?' + firstSection + '?' + firstSection;
+				secondSection = secondSection + ',' + secondSection + ',' + secondSection + ',' + secondSection + ',' + secondSection;
+
+				string[] lengths = secondSection.Split(',');
+				int[] blockLengths = lengths.Select(int.Parse).ToArray();
+
+				long arrangements = CountValidArrangements(firstSection, blockLengths);
+				totalArrangements += arrangements;
+			}
+
+			return totalArrangements;
+		}
+
+		private static Dictionary<string, long> memo =  new Dictionary<string, long>();
+
+		public static long CountValidArrangements(string pattern, int[] blocks)
+		{
+			long count = 0;
+			CountValidArrangementsHelper(pattern, blocks, 0, ref count);
+			return count;
+		}
+
+		public static void CountValidArrangementsHelper(string pattern, int[] blocks, int index, ref long count)
+		{
+			if (index == blocks.Length)
+			{
+				count++;
+				return;
+			}
+
+			int blockLength = blocks[index];
+
+			for (int i = 0; i <= pattern.Length - blockLength; i++)
+			{
+				string currentBlock = pattern.Substring(i, blockLength);
+
+				if (IsValidBlock(currentBlock))
+				{
+					string newPattern = pattern.Substring(0, i) + currentBlock + pattern.Substring(i + blockLength);
+					CountValidArrangementsHelper(newPattern, blocks, index + 1, ref count);
+				}
+			}
+		}
+
+		public static bool IsValidBlock(string block)
+		{
+			return block.All(c => c == '?');
+		}
+
+		/*internal static long Part2(string input)
+		{
 			string[] lines = input.Split('\n');
 			long result = 0l;
 			foreach (string line in lines)
 			{
 				string[] data = line.Split(' ');
 
-				data[0] = data[0] + '?' + data[0] + '?' + data[0] + '?' + data[0] + '?' + data[0];
-				data[1] = data[1] + ',' + data[1] + ',' + data[1] + ',' + data[1] + ',' + data[1];
+				if (data[0][0] == '.' && data[0][^1] == '.')
+				{
+					List<int> sizes = data[1].Split(',').Select(int.Parse).ToList();
+					result += GetPermutations(data[0], sizes);
+				}
+				else
+				{
+					data[0] = data[0] + '?' + data[0] + '?' + data[0] + '?' + data[0] + '?' + data[0];
+					data[1] = data[1] + ',' + data[1] + ',' + data[1] + ',' + data[1] + ',' + data[1];
 
-				int[] sizes = data[1].Split(',').Select(int.Parse).ToArray();
-				
-				SpringBreakdownContainer cont = new SpringBreakdownContainer(data[0], sizes);
-				result += cont.GetPermutations();
+					int[] sizes = data[1].Split(',').Select(int.Parse).ToArray();
+
+					SpringBreakdownContainer cont = new SpringBreakdownContainer(data[0], sizes);
+					result += cont.GetPermutations();
+				}
 			}
 			
 			return result;
-		}
+		}*/
 
 		private static void Inc(int[] s, int max, int[] resetVal)
 		{
+			int sum = s.Sum();
 			for (int i = 0; i < s.Length; i++)
 			{
-				if (s.Sum()+1 < max)
+				if (sum+1 < max)
 				{
 					s[i]++;
 					return;
 				}
-				else if(i < s.Length-1)
+				else if(i < s.Length)
 				{
-					s[i] = resetVal[i];
+					sum -= s[i];
+					sum += resetVal[i] + 1;
+					s[i] = resetVal[i] + 1;
+				}
+				else if (i == s.Length)
+				{
+					s[0] = max;
+					s[^1] = max;
+					return;
 				}
 			}
+			s[0] = max;
 			s[^1] = max;
 		}
 
@@ -170,32 +247,43 @@ namespace AdventofCode2023
 				//int minVal = s.Min();
 				for (int i = 0; i < s.Length; i++)
 				{
-					s[i] = values[i];
+					s[i] = values[i]+ (i < s.Length -1 ? 1 : 0);
 				}
 				int m = chunk.Length;
 				long loops = 0;
+				SpringBreakdown[] frags = new SpringBreakdown[s.Length];
 				for (; Cont(s, m); Inc(s, m, values))
 				{
+					Array.Clear(frags, 0, s.Length);
 					loops++;
-					//this takes too long
 					if (Invalid(s, values)) continue;
-					SpringBreakdown[] frags = new SpringBreakdown[s.Length];
 					int skip = 0;
+					bool abort = false;
 					for (int i = 0; i < s.Length; i++)
 					{
 						frags[i] = new SpringBreakdown(string.Join("",chunk.Skip(skip).Take(s[i])), values[i]);
-						skip += s[i];
-						if (frags[i].GetPermutations() == 0)
+						skip += s[i]+1;
+						if (frags[i].GetPermutations() <= 0)
+						{
+							abort = true;
 							break;
+						}
 					}
 
-					if(frags.Any(f => f.GetPermutations() == 0)) continue;
+					if(abort)
+						continue;
 
-					loops = 0;
-					if (!subsections.Any(list => Day12.Matches(list, frags)))
+					Console.WriteLine($"Yay! Took {loops} tries.");
+					if (!subsections.Any(list => Matches(list, frags)) && frags.All(f => f.GetPermutations() > 0))
 					{
 						subsections.Add(frags);
 					}
+					else
+					{
+						string typeStr = frags.All(f => f.GetPermutations() > 0) ? "new" : "valid";
+						Console.WriteLine($"...but it wasn't {typeStr} :(");
+					}
+					loops = 0;
 				}
 			}
 
@@ -212,10 +300,12 @@ namespace AdventofCode2023
 
 			private static bool Cont(int[] ints, int target)
 			{
+				int o = target;
 				for (int i = 0; i < ints.Length; i++)
 				{
 					target -= ints[i];
-					if (target <= 0) return false;
+					if (target < 0)
+						return false;
 				}
 				return true;
 			}
@@ -241,14 +331,18 @@ namespace AdventofCode2023
 
 		private class SpringBreakdown
 		{
-			private readonly string chunk;
-			private readonly int value;
+			public readonly string chunk;
+			public readonly int value;
 			private long permute = -1;
 
 			public SpringBreakdown(string chunk, int value)
 			{
-				this.chunk = chunk;
+				this.chunk = chunk.Trim('.');
 				this.value = value;
+				if (Lookup.TryGetValue(this, out long v) && v == 0)
+				{
+					permute = 0;
+				}
 			}
 
 			public long GetPermutations()
@@ -263,6 +357,10 @@ namespace AdventofCode2023
 				{
 					permute = Day12.GetPermutations(chunk, new List<int> { value });
 					Lookup.Add(this, permute);
+					if (permute < 0)
+					{
+						;
+					}
 				}
 
 				return permute;
@@ -272,19 +370,19 @@ namespace AdventofCode2023
 			{
 				if (obj is SpringBreakdown other)
 				{
-					return other.chunk.Trim('.') == chunk.Trim('.') && other.value == value;
+					return other.chunk == chunk && other.value == value;
 				}
 				return false;	
 			}
 
 			public override int GetHashCode()
 			{
-				return 13 * chunk.GetHashCode() + value;
+				return 73 * chunk.GetHashCode() + value;
 			}
 
 			public override string ToString()
 			{
-				return $"{chunk} {value}";
+				return $"{chunk} [{value}]: {permute}";
 			}
 		}
 	}

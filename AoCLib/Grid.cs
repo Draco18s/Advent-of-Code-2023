@@ -106,7 +106,7 @@ namespace Draco18s.AoCLib {
 		internal bool IsInside(Vector2 p1)
 		{
 			if (p1.x < MinX || p1.x >= MaxX) return false;
-			if (p1.y < MinY || p1.y+2 >= MaxY) return false;
+			if (p1.y < MinY || p1.y >= MaxY) return false;
 			return true;
 		}
 
@@ -397,7 +397,8 @@ namespace Draco18s.AoCLib {
 		public long FloodFill(int _x, int _y, int fillValue, ShouldFill shouldFill, EdgeHandler edgeHandler, bool allowDiagonals = false)
 		{
 			long size = 1;
-			int L = cells[_x, _y];
+			;
+			int L = this[_x, _y];
 			if (L == fillValue) return 0;
 
 			List<(int X, int Y)> open = new List<(int,int)>();
@@ -408,15 +409,15 @@ namespace Draco18s.AoCLib {
 				(int x, int y) p = open[0];
 				open.RemoveAt(0);
 				if (p.x >= MaxX || p.y >= MaxY || p.x < MinX || p.y < MinY) continue;
-				if(cells[p.x, p.y] == fillValue) continue;
-				cells[p.x, p.y] = fillValue;
+				if(this[p.x, p.y] == fillValue) continue;
+				this[p.x, p.y] = fillValue;
 				size++;
 
-				int N = (p.y == MinY) ? edgeHandler() : cells[p.x, p.y - 1];
-				int W = (p.x == MinX) ? edgeHandler() : cells[p.x - 1, p.y];
+				int N = (p.y == MinY) ? edgeHandler() : this[p.x, p.y - 1];
+				int W = (p.x == MinX) ? edgeHandler() : this[p.x - 1, p.y];
 
-				int S = (p.y == MaxY - 1) ? edgeHandler() : cells[p.x, p.y + 1];
-				int E = (p.x == MaxX - 1) ? edgeHandler() : cells[p.x + 1, p.y];
+				int S = (p.y == MaxY - 1) ? edgeHandler() : this[p.x, p.y + 1];
+				int E = (p.x == MaxX - 1) ? edgeHandler() : this[p.x + 1, p.y];
 
 				if (shouldFill(N, L))
 				{

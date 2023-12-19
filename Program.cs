@@ -1,5 +1,4 @@
 ﻿using AdventofCode.StatsBuilder;
-using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,7 +7,6 @@ using System.Net;
 using System.Net.Http;
 using System.Reflection;
 using System.Text;
-//using System.Text.Json;
 using System.Threading.Tasks;
 using Draco18s.AoCLib;
 
@@ -21,7 +19,7 @@ namespace AdventofCode2023 {
 		private const string leaderboardURI = "{0}/leaderboard/private/view/{1}.json";
 		private static Dictionary<string,List<string>> conf;
 		
-		private static string puzzleNum = "15";
+		private static string puzzleNum = "18";
 
 		static void Main(string[] args) {
 			/*** HOW TO GET SESSION ID (because I keep forgetting)
