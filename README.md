@@ -6,6 +6,9 @@ https://adventofcode.com/2023/
 ```
       --------Part 1---------   --------Part 2---------
 Day       Time    Rank  Score       Time    Rank  Score
+ 18   00:15:46     489      0   11:46:29   10120      0
+ 17   02:22:41    3058      0   18:58:58   13092      0
+ 16   00:43:50    2671      0   00:49:09    2226      0
  15   00:07:45    2641      0   00:21:22    1058      0
  14   00:04:33     140      0   00:12:31      25     76
  13   00:55:37    4348      0   01:25:54    3958      0
@@ -34,3 +37,4 @@ Day       Time    Rank  Score       Time    Rank  Score
 *Day 12: Ugh. I gave this one a stab, but gave up.
 *Day 13: Simple stupid mistake messed up my reflection-detection code during part 1. Part 2 took some trial-and-error to figure out which value was the value to use assuming a single smudge (i.e. I wouldn't always get a single non-zero value).
 *Day 14: I think I got stupid lucky when I threw a 1000 iteration answer at the site (not the full 1000000000 cycles) and it was right. There was probably some pattern I was meant to find and instead finding it I tripped over the right answer. Better lucky than good?
+*Day 16: Accidentally let beams phase through splitters if a beam had already been split by that splitter.
