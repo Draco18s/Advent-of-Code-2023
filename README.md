@@ -6,6 +6,7 @@ https://adventofcode.com/2023/
 ```
       --------Part 1---------   --------Part 2---------
 Day       Time    Rank  Score       Time    Rank  Score
+ 19   00:30:18    1647      0   02:39:45    3213      0
  18   00:15:46     489      0   11:46:29   10120      0
  17   02:22:41    3058      0   18:58:58   13092      0
  16   00:43:50    2671      0   00:49:09    2226      0
@@ -38,3 +39,6 @@ Day       Time    Rank  Score       Time    Rank  Score
 *Day 13: Simple stupid mistake messed up my reflection-detection code during part 1. Part 2 took some trial-and-error to figure out which value was the value to use assuming a single smudge (i.e. I wouldn't always get a single non-zero value).
 *Day 14: I think I got stupid lucky when I threw a 1000 iteration answer at the site (not the full 1000000000 cycles) and it was right. There was probably some pattern I was meant to find and instead finding it I tripped over the right answer. Better lucky than good?
 *Day 16: Accidentally let beams phase through splitters if a beam had already been split by that splitter.
+*Day 17: This one was just subtly brutal. It shouldn't have been hard, and yet, it was...
+*Day 18: My main issue with part 2 was missing a key component of the puzzle input that resulted in a huge time sink trying to figure out why my cell-counting wasn't counting properly (it was). That said, I still have no idea how part 2 can be solved in under 3 hours.
+*Day 19: One of these days I'll stop using `int` by default. I should know better by now.
