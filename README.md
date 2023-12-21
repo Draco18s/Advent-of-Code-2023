@@ -6,6 +6,8 @@ https://adventofcode.com/2023/
 ```
       --------Part 1---------   --------Part 2---------
 Day       Time    Rank  Score       Time    Rank  Score
+ 21   00:28:08    2778      0   04:44:32    2229      0
+ 20   00:44:17     734      0   01:06:18     462      0
  19   00:30:18    1647      0   02:39:45    3213      0
  18   00:15:46     489      0   11:46:29   10120      0
  17   02:22:41    3058      0   18:58:58   13092      0
@@ -40,5 +42,7 @@ Day       Time    Rank  Score       Time    Rank  Score
 *Day 14: I think I got stupid lucky when I threw a 1000 iteration answer at the site (not the full 1000000000 cycles) and it was right. There was probably some pattern I was meant to find and instead finding it I tripped over the right answer. Better lucky than good?
 *Day 16: Accidentally let beams phase through splitters if a beam had already been split by that splitter.
 *Day 17: This one was just subtly brutal. It shouldn't have been hard, and yet, it was...
-*Day 18: My main issue with part 2 was missing a key component of the puzzle input that resulted in a huge time sink trying to figure out why my cell-counting wasn't counting properly (it was). That said, I still have no idea how part 2 can be solved in under 3 hours.
+*Day 18: My main issue with part 2 was missing a key component of the puzzle input that resulted in a huge time sink trying to figure out why my cell-counting wasn't counting properly (it was) which I only figured out when I tried to graph the thing ([actual working result](https://cdn.discordapp.com/attachments/783923306767843328/1186439828502482944/image.png)). That said, I still have no idea how part 2 can be solved in under 3 hours.
 *Day 19: One of these days I'll stop using `int` by default. I should know better by now.
+*Day 20: I should have recognized the "large co-prime cycle" thing sooner. Maybe I should write a library function to detect-and-output these?
+*Day 21: Part 2, I am not even sure how to approach this. FOUR HOURS LATER: I kinda cheated, went and found another solution and used it to generate an answer I could validate my code against. I was only 4 minutes from solving it with the track I'd been on, too.

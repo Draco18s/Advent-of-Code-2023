@@ -19,7 +19,7 @@ namespace AdventofCode2023 {
 		private const string leaderboardURI = "{0}/leaderboard/private/view/{1}.json";
 		private static Dictionary<string,List<string>> conf;
 		
-		private static string puzzleNum = "19";
+		private static string puzzleNum = "21";
 
 		static void Main(string[] args) {
 			/*** HOW TO GET SESSION ID (because I keep forgetting)
