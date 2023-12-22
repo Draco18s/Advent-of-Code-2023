@@ -56,6 +56,38 @@ namespace Draco18s.AoCLib {
 			return cells.GetLength(i);
 		}
 
+		internal void IncreaseGridToInclude(Vector3 p1, EdgeHandler edgeHandler)
+		{
+			int dx = 0, dy = 0, dz = 0;
+			if (p1.x < MinX)
+			{
+				dx = -Math.Abs(MinX - p1.x) - 1;
+			}
+			if (p1.x >= MaxX)
+			{
+				dx = Math.Abs(p1.x - MaxX) + 1;
+			}
+			if (p1.y < MinY)
+			{
+				dy = -Math.Abs(MinY - p1.y) - 1;
+			}
+			if (p1.y >= MaxY)
+			{
+				dy = Math.Abs(p1.y - MaxY) + 1;
+			}
+
+			if (p1.z < MinZ)
+			{
+				dz = -Math.Abs(MinZ - p1.z) - 1;
+			}
+			if (p1.z >= MaxZ)
+			{
+				dz = Math.Abs(p1.z - MaxZ) + 1;
+			}
+
+			IncreaseGridBy(dx, dy, dz, edgeHandler);
+		}
+
 		///<summary>
 		/// Increases the grid in the positive direction if parameters are positive and in the negative
 		/// direction if parameters are negative. The value accessed at this[0,0] remains the same.
