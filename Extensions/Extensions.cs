@@ -24,4 +24,15 @@ public static class Extentions {
 			list[n] = value;  
 		}  
 	}
+
+	//I'm fekking tired of converting lists to queues
+	public static void Add<T>(this Queue<T> que, T obj)
+	{
+		que.Enqueue(obj);
+	}
+
+	public static T RemoveAt<T>(this Queue<T> que, int _)
+	{
+		return que.Dequeue();
+	}
 }

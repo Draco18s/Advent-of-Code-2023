@@ -394,6 +394,85 @@ namespace Draco18s.AoCLib {
 			return FloodFill(_x, _y, fillValue, shouldFill, returnNegInf,allowDiagonals);
 		}
 
+
+		public long FloodFill(Vector2 pos, Func<Vector2, Vector2, int> fillValue, Func<Vector2, Vector2, int, int, bool> shouldFill, EdgeHandler edgeHandler, bool allowDiagonals = false)
+		{
+			long size = 1;
+
+			List<Vector2> open = new List<Vector2>();
+			open.Add((pos));
+
+			while (open.Count > 0)
+			{
+				Vector2 p = open[0];
+				open.RemoveAt(0);
+
+				int L = this[pos];
+
+				if (p.x >= this.MaxX || p.y >= this.MaxY || p.x < this.MinX || p.y < this.MinY) continue;
+
+				int N = (p.y == this.MinY) ? edgeHandler() : this[p.x, p.y - 1];
+				int W = (p.x == this.MinX) ? edgeHandler() : this[p.x - 1, p.y];
+
+				int S = (p.y == this.MaxY - 1) ? edgeHandler() : this[p.x, p.y + 1];
+				int E = (p.x == this.MaxX - 1) ? edgeHandler() : this[p.x + 1, p.y];
+				
+				int v;
+				if (shouldFill(new Vector2(p.x, p.y-1), new Vector2(p.x, p.y), L, N))
+				{
+					if (p.y - 1 < this.MinY) continue;
+					v = fillValue(new Vector2(p.x, p.y), new Vector2(p.x, p.y - 1));
+					if (v != this[p.x, p.y - 1])
+					{
+						open.Add(new Vector2(p.x, p.y - 1));
+						size++;
+					}
+
+					this[p.x, p.y - 1] = v;
+				}
+				if (shouldFill(new Vector2(p.x, p.y + 1), new Vector2(p.x, p.y), L, S))
+				{
+					if (p.y + 1 >= this.MaxY) continue;
+					v = fillValue(new Vector2(p.x, p.y), new Vector2(p.x, p.y + 1));
+					if (v != this[p.x, p.y + 1])
+					{
+						open.Add(new Vector2(p.x, p.y + 1));
+						size++;
+					}
+
+					this[p.x, p.y + 1] = v;
+				}
+				if (shouldFill(new Vector2(p.x - 1, p.y), new Vector2(p.x, p.y), L, W))
+				{
+					if (p.x - 1 < this.MinX) continue;
+					v = fillValue(new Vector2(p.x, p.y), new Vector2(p.x - 1, p.y));
+					if (v != this[p.x - 1, p.y])
+					{
+						open.Add(new Vector2(p.x - 1, p.y));
+						size++;
+					}
+
+					this[p.x - 1, p.y] = v;
+				}
+				if (shouldFill(new Vector2(p.x + 1, p.y), new Vector2(p.x, p.y), L, E))
+				{
+					if (p.x + 1 >= this.MaxX) continue;
+					v = fillValue(new Vector2(p.x, p.y), new Vector2(p.x + 1, p.y));
+					if (v != this[p.x + 1, p.y])
+					{
+						open.Add(new Vector2(p.x + 1, p.y));
+						size++;
+					}
+
+					this[p.x + 1, p.y] = v;
+				}
+				//Console.WriteLine(this.ToString("char+32"));
+			}
+
+			return size;
+
+		}
+
 		public long FloodFill(int _x, int _y, int fillValue, ShouldFill shouldFill, EdgeHandler edgeHandler, bool allowDiagonals = false)
 		{
 			long size = 1;

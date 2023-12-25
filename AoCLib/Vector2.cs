@@ -10,6 +10,11 @@ namespace Draco18s.AoCLib {
 			y = _y;
 		}
 
+
+		public static Vector2 operator *(Vector2 a, int b)
+		{
+			return new Vector2(a.x * b, a.y * b);
+		}
 		public static Vector2 operator -(Vector2 a, Vector2 b)
 		{
 			return new Vector2(a.x - b.x, a.y - b.y);
