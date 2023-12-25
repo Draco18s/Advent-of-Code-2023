@@ -6,6 +6,9 @@ https://adventofcode.com/2023/
 ```
       --------Part 1---------   --------Part 2---------
 Day       Time    Rank  Score       Time    Rank  Score
+ 25          -       -      -          -       -      -
+ 24   18:38:56   10877      0          -       -      -
+ 23   00:39:41    1629      0       >24h   10341      0
  22   00:33:52     373      0   00:53:04     642      0
  21   00:28:08    2778      0   04:44:32    2229      0
  20   00:44:17     734      0   01:06:18     462      0
@@ -47,3 +50,6 @@ Day       Time    Rank  Score       Time    Rank  Score
 *Day 19: One of these days I'll stop using `int` by default. I should know better by now.
 *Day 20: I should have recognized the "large co-prime cycle" thing sooner. Maybe I should write a library function to detect-and-output these?
 *Day 21: Part 2, I am not even sure how to approach this. FOUR HOURS LATER: I kinda cheated, went and found another solution and used it to generate an answer I could validate my code against. I was only 4 minutes from solving it with the track I'd been on, too.
+*Day 23: Need to reapproach part 2, current approach has too many possibilities to brute force the way I'm doing it. Reapproach implented, puzzle solved in ~3 minutes execution time.
+*Day 24: Part 1: was out so I didn't get to it on time (approx 24 minutes to ssolve). Part 2: oh what the heck, I don't even really know where to start here.
+*Day 25: I have a solution that will eventually return an answer, but it's (at least) O(n³) in complexity and I'm not sure how to speed it up.
