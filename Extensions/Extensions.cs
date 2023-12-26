@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using Draco18s.AoCLib;
 
 public static class Extentions {
 	public static IEnumerable<T> Enumerate<T>(this T[,] arr) {
@@ -34,5 +35,22 @@ public static class Extentions {
 	public static T RemoveAt<T>(this Queue<T> que, int _)
 	{
 		return que.Dequeue();
+	}
+
+	public static Vector2 Offset(this Orientation dir)
+	{
+		switch (dir)
+		{
+			case Orientation.EAST:
+				return new Vector2(1, 0);
+			case Orientation.WEST:
+				return new Vector2(-1, 0);
+			case Orientation.SOUTH:
+				return new Vector2(0, 1);
+			case Orientation.NORTH:
+				return new Vector2(0, 1);
+		}
+
+		return new Vector2(0, 0);
 	}
 }

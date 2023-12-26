@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.Design;
 using System.Linq;
 using System.Reflection;
 using Draco18s.AoCLib;
@@ -50,30 +51,85 @@ namespace AdventofCode2023
 					});
 				}
 			}
+			
+			alledges = alledges.Distinct().Where(e => !CheckCommonNeighbors(e)).OrderBy(e => e.ToString()).ToList();
 
-			int totalVerticies = graph.Vertices.Count;
-			alledges = alledges.Distinct().ToList();
+			Dictionary<GraphEdge, int> edgeUseCount = new Dictionary<GraphEdge, int>();
 
-			for (int a = 0; a < alledges.Count; a++)
+			List<Vertex<string>> verts = graph.Vertices.ToList();
+			
+			for (int i = 0; i < 1000; i++)
 			{
-				for (int b = a+1; b < alledges.Count; b++)
+				verts.Shuffle();
+				(List<string> path, bool valid) = graph.FindPath(verts[0], verts[1]);
+				for (var j = 1; j < path.Count; j++)
 				{
-					for (int c = b+1; c < alledges.Count; c++)
+					Vertex<string> vert1 = graph.GetVertex(path[j-1]);
+					Vertex<string> vert2 = graph.GetVertex(path[j]);
+					GraphEdge edge = new GraphEdge()
 					{
-						if (TryDisconnect(graph, alledges[a], alledges[b], alledges[c], out long res, totalVerticies))
-						{
-							if(res > 2640)
-								Console.WriteLine(res);
-						}
+						left = vert1,
+						right = vert2,
+					};
+					edgeUseCount.TryAdd(edge, 0);
+					edgeUseCount[edge]++;
+				}
+			}
+
+			KeyValuePair<GraphEdge, int>[] top3 = edgeUseCount.OrderByDescending(kvp => kvp.Value).Take(3).ToArray();
+
+			TryDisconnect(graph, top3[0].Key, top3[1].Key, top3[2].Key, out result);
+
+			return result;
+		}
+
+		private static bool TryPathDisconnect(Graph<string> graph, GraphEdge e1, GraphEdge e2, out long res)
+		{
+			graph.RemoveEdge(e1.left, e1.right);
+			graph.RemoveEdge(e2.left, e2.right);
+
+			graph.RemoveEdge(e1.right, e1.left);
+			graph.RemoveEdge(e2.right, e2.left);
+
+			(List<string> path, bool valid) p1 = graph.FindPath(e1.left, e2.right);
+			(List<string> path, bool valid) p2 = graph.FindPath(e1.left, e2.right);
+			foreach (string p1n in p1.path)
+			{
+				if (!p2.path.Contains(p1n)) continue;
+
+				Vertex<string> common = graph.GetVertex(p1n);
+				(Vertex<string> node, int weight)[] edgesToCheck = common.Edges.ToArray();
+				foreach ((Vertex<string> node, int weight) e in edgesToCheck)
+				{
+					if(!p1.path.Contains(e.node.Value)) continue;
+					if(!p2.path.Contains(e.node.Value)) continue;
+
+					GraphEdge e3 = new GraphEdge()
+					{
+						left = common,
+						right = e.node
+					};
+
+					if (TryDisconnect(graph, e1, e2, e3, out res))
+					{
+						return true;
 					}
 				}
 			}
 
-			return -1;
+			graph.AddEdge(e1.left, e1.right);
+			graph.AddEdge(e2.left, e2.right);
+
+			graph.AddEdge(e1.right, e1.left);
+			graph.AddEdge(e2.right, e2.left);
+			res = -1;
+			return false;
 		}
 
-		private static bool TryDisconnect(Graph<string> graph, GraphEdge e1, GraphEdge e2, GraphEdge e3, out long l, int numVerts)
+		private static bool TryDisconnect(Graph<string> graph, GraphEdge e1, GraphEdge e2, GraphEdge e3, out long l)
 		{
+			l = -1;
+
 			graph.RemoveEdge(e1.left, e1.right);
 			graph.RemoveEdge(e2.left, e2.right);
 			graph.RemoveEdge(e3.left, e3.right);
@@ -82,57 +138,58 @@ namespace AdventofCode2023
 			graph.RemoveEdge(e2.right, e2.left);
 			graph.RemoveEdge(e3.right, e3.left);
 
-			(List<string> _, bool valid) = graph.FindPath(e1.left.Value, e1.right.Value);
-			if (valid)
+			int reachableFromE1L = graph.GetConnectivity(e1.left);
+			int totalReach = reachableFromE1L;
+			if (reachableFromE1L < graph.Vertices.Count)
 			{
-				graph.AddEdge(e1.left, e1.right);
-				graph.AddEdge(e2.left, e2.right);
-				graph.AddEdge(e3.left, e3.right);
 
-				graph.AddEdge(e1.right, e1.left);
-				graph.AddEdge(e2.right, e2.left);
-				graph.AddEdge(e3.right, e3.left);
+				int reachableFromE1R = graph.GetConnectivity(e1.right);
+				totalReach += reachableFromE1R;
 
-				l = -1;
-				return false;
+				l = (reachableFromE1L) * (reachableFromE1R);
 			}
-			else
+
+			graph.AddEdge(e1.left, e1.right);
+			graph.AddEdge(e2.left, e2.right);
+			graph.AddEdge(e3.left, e3.right);
+
+			graph.AddEdge(e1.right, e1.left);
+			graph.AddEdge(e2.right, e2.left);
+			graph.AddEdge(e3.right, e3.left);
+
+			return totalReach == graph.Vertices.Count && l > 0;
+		}
+
+		private static bool CheckCommonNeighbors(GraphEdge edge)
+		{
+			foreach ((Vertex<string> node, int weight) e1 in edge.left.Edges)
 			{
-				List<string> reachableFromE1L = new List<string>();
-				foreach (Vertex<string> vert in graph.Vertices)
+				if(e1.node == edge.right) continue;
+				// find and invalidate triangles
+				foreach ((Vertex<string> node, int weight) e2 in edge.right.Edges)
 				{
-					if(vert == e1.left) continue;
+					if (e2.node == edge.left) continue;
+					if (e1 == e2) return true;
 
-					(_, valid) = graph.FindPath(e1.left.Value, vert.Value);
-					if (valid)
+					/*// find and invalidate all quadrilaterals 
+					foreach ((Vertex<string> node, int weight) e3 in e2.node.Edges)
 					{
-						reachableFromE1L.Add(vert.Value);
-					}
+						if (e3.node == e2.node) continue;
+
+						if (e3 == e1) return true;
+
+						// find and invalidate all pentangles 
+						foreach ((Vertex<string> node, int weight) e4 in e1.node.Edges)
+						{
+							if (e4.node == e1.node) continue;
+
+							if (e4 == e3) return true;
+						}
+					}*/
 				}
-				List<string> reachableFromE1R = new List<string>();
-				foreach (Vertex<string> vert in graph.Vertices)
-				{
-					if (vert == e1.right) continue;
-
-					(_, valid) = graph.FindPath(e1.right.Value, vert.Value);
-					if (valid)
-					{
-						reachableFromE1R.Add(vert.Value);
-					}
-				}
-
-				l = (reachableFromE1L.Count+1) * (reachableFromE1R.Count+1);
-				
-				graph.AddEdge(e1.left, e1.right);
-				graph.AddEdge(e2.left, e2.right);
-				graph.AddEdge(e3.left, e3.right);
-
-				graph.AddEdge(e1.right, e1.left);
-				graph.AddEdge(e2.right, e2.left);
-				graph.AddEdge(e3.right, e3.left);
-
-				return reachableFromE1L.Count + reachableFromE1R.Count + 2 == numVerts;
 			}
+
+			return false;
 		}
 
 		private class GraphEdge
@@ -152,6 +209,11 @@ namespace AdventofCode2023
 			public override int GetHashCode()
 			{
 				return left.Value.GetHashCode() * right.Value.GetHashCode();
+			}
+
+			public override string ToString()
+			{
+				return $"{left.Value}—{right.Value}";
 			}
 		}
 

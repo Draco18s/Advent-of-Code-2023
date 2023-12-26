@@ -6,7 +6,7 @@ https://adventofcode.com/2023/
 ```
       --------Part 1---------   --------Part 2---------
 Day       Time    Rank  Score       Time    Rank  Score
- 25          -       -      -          -       -      -
+ 25       >24h    8977      0          -       -      -
  24   18:38:56   10877      0          -       -      -
  23   00:39:41    1629      0       >24h   10341      0
  22   00:33:52     373      0   00:53:04     642      0
@@ -52,4 +52,4 @@ Day       Time    Rank  Score       Time    Rank  Score
 *Day 21: Part 2, I am not even sure how to approach this. FOUR HOURS LATER: I kinda cheated, went and found another solution and used it to generate an answer I could validate my code against. I was only 4 minutes from solving it with the track I'd been on, too.
 *Day 23: Need to reapproach part 2, current approach has too many possibilities to brute force the way I'm doing it. Reapproach implented, puzzle solved in ~3 minutes execution time.
 *Day 24: Part 1: was out so I didn't get to it on time (approx 24 minutes to ssolve). Part 2: oh what the heck, I don't even really know where to start here.
-*Day 25: I have a solution that will eventually return an answer, but it's (at least) O(n³) in complexity and I'm not sure how to speed it up.
+*Day 25: I have a solution that will eventually return an answer, but it's (at least) O(n³) in complexity and I'm not sure how to speed it up. Gave up and snuck a peek at reddit. Random paths, look for frequenlty used edges, I had hints of that in what I was doing, but hadn't thought to use it as the primary check.

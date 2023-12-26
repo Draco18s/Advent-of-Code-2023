@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -10,6 +11,7 @@ namespace Draco18s.AoCLib
 	public class Graph<T> where T : class
 	{
 		public IReadOnlyList<Vertex<T>> Vertices => _vertices;
+		private Dictionary<T, Vertex<T>> lookup = new Dictionary<T, Vertex<T>>();
 
 		private readonly List<Vertex<T>> _vertices;
 
@@ -23,7 +25,9 @@ namespace Draco18s.AoCLib
 		public void AddVertex(T vertex)
 		{
 			if (vertex == null) throw new ArgumentNullException();
-			_vertices.Add(new Vertex<T>(vertex));
+			Vertex<T> vert = new Vertex<T>(vertex);
+			_vertices.Add(vert);
+			lookup.Add(vertex, vert);
 		}
 
 		public void RemoveVertex(Vertex<T> vertex)
@@ -53,12 +57,12 @@ namespace Draco18s.AoCLib
 
 		public Vertex<T> GetVertex(T value)
 		{
-			return _vertices.Find(x => x.Value.Equals(value));
+			return lookup[value]; //_vertices.Find(x => x.Value.Equals(value));
 		}
 
 		public bool HasNeighbor(T start, T end)
 		{
-			return _vertices.Find(x => x.Value == start && x.HasNeighbor(end)) != null;
+			return GetVertex(start).HasNeighbor(end); //_vertices.Find(x => x.Value == start && x.HasNeighbor(end)) != null;
 		}
 
 		public void RemoveEdge(Vertex<T> start, Vertex<T> end)
@@ -97,10 +101,13 @@ namespace Draco18s.AoCLib
 			return false;
 		}
 
-		public (List<T> path, bool valid) FindPath(T start, T end) => FindPath(start, end, null);
-		public (List<T> path, bool valid) FindPath(T start, T end, Predicate<T> conditions)
+		public (List<T> path, bool valid) FindPath(T start, T end, Predicate<T> conditions = null)
 		{
-			if (start == end)
+			return FindPath(GetVertex(start), GetVertex(end), conditions);
+		}
+
+		public (List<T> path, bool valid) FindPath(Vertex<T> startVertex, Vertex<T> endVertex, Predicate<T> conditions = null) {
+			if (startVertex.Value == endVertex.Value)
 			{
 				Console.Error.WriteLine("Cannot pass in same start and end node.");
 				return (new List<T>(), false);
@@ -108,36 +115,43 @@ namespace Draco18s.AoCLib
 
 			// Search all nodes
 			List<Vertex<T>> searchList = new List<Vertex<T>>(); // We will grow this unvisited set as we go along until it's empty
-			Vertex<T> startVertex = GetVertex(start);
+			
 			InitializePathFinding(startVertex);
 			searchList.Add(startVertex);
 
 			// Keep searching and looking at neighbors until we've exhausted all neighbors and everything reachable has been visited
-			//int iterations = 0;
+			int iterations = this.Vertices.Count * 2;
 			while (searchList.Count > 0)
 			{
-				int ct = searchList.Count;
-				/*if (iterations > 1000)
+				var node = searchList.First();//searchList.OrderByDescending(x => x.Score).ToList().Last();
+				searchList.RemoveAt(0);
+				if (node.Visited)
 				{
-					Console.Error.WriteLine("Infinite loop possibly detected, breaking out.");
-					break;
-				}*/
-				var node = searchList.OrderByDescending(x => x.Score).ToList().Last();
+					continue;
+				}
 				node.Visited = true;
-				searchList.Remove(node);
+				//searchList.RemoveAll(n => n == node);
+
+				if (node.Value == endVertex.Value)
+					break;
+
 				foreach (Vertex<T> newNode in CalculateNeighboringNodes(node, conditions))
 				{
 					// Add all the new nodes discovered to the queue
-					if(!searchList.Contains(newNode))
-						searchList.Add(newNode);
+					searchList.Add(newNode);
 				}
-				//iterations++;
-				if (searchList.Count == ct)
+				if (iterations-- < 0)
+				{
+					Console.Error.WriteLine("Infinite loop possibly detected, breaking out.");
 					break;
+				}
 			}
+			//Vertex<T> endVertex = GetVertex(end);
+			//if(endVertex.Visited)
+			//	return (new List<T>(), true);
 
 			// Once all possible nodes visited backtrack from the end node back to the start
-			List<Vertex<T>> path = ReconstructPath(startVertex, GetVertex(end));
+			List<Vertex<T>> path = ReconstructPath(startVertex, endVertex);
 			if (path.Count == 0)
 			{
 				return (new List<T>(), false); // No path found
@@ -164,7 +178,7 @@ namespace Draco18s.AoCLib
 				vertex.Score = int.MaxValue;
 			}
 			start.Score = 0;
-			start.Visited = true;
+			//start.Visited = true;
 		}
 
 		// Returns the next set of nodes to be visited
@@ -231,6 +245,31 @@ namespace Draco18s.AoCLib
 			}
 			path.Reverse(); // Make this path go forwards from the start node
 			return path;
+		}
+
+		public int GetConnectivity(Vertex<T> startVertex)
+		{
+			List<Vertex<T>> searchList = new List<Vertex<T>>(); // We will grow this unvisited set as we go along until it's empty
+			InitializePathFinding(startVertex);
+			searchList.Add(startVertex);
+
+			// Keep searching and looking at neighbors until we've exhausted all neighbors and everything reachable has been visited
+			int iterations = this.Vertices.Count * 2;
+			int foundNodes = 0;
+			while (searchList.Count > 0 && iterations-->0)
+			{
+				Vertex<T> node = searchList.First();//searchList.OrderByDescending(x => x.Score).ToList().Last();
+				searchList.RemoveAt(0);
+				if (node.Visited)
+				{
+					continue;
+				}
+				node.Visited = true;
+				foundNodes++;
+				searchList.AddRange(CalculateNeighboringNodes(node, null));
+			}
+
+			return foundNodes;
 		}
 	}
 }
