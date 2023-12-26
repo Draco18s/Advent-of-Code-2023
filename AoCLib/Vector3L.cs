@@ -14,6 +14,17 @@ namespace Draco18s.AoCLib
 			z = _z;
 		}
 
+		public static Vector3L Parse(string val)
+		{
+			return Parse(val, ',');
+		}
+
+		public static Vector3L Parse(string val, char split)
+		{
+			string[] vals = val.Split(split);
+			return new Vector3L(long.Parse(vals[0]), long.Parse(vals[1]), long.Parse(vals[2]));
+		}
+
 		public static Vector3L operator *(Vector3L a, long b)
 		{
 			return new Vector3L(a.x * b, a.y * b, a.z * b);

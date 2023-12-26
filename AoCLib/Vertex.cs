@@ -32,7 +32,7 @@ namespace Draco18s.AoCLib
 			if (neighbor == this) return;
 			if (_edges.Any(x => x.node == neighbor))
 			{
-				Console.Error.WriteLine("Attempting to add duplicate neighbor! Check this.");
+				//Console.Error.WriteLine("Attempting to add duplicate neighbor! Check this.");
 				return; // Will not add duplicate edges
 			}
 			_edges.Add((neighbor, weight));
